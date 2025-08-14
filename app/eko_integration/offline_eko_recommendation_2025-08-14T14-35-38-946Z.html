@@ -1,0 +1,264 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MeetSpot 智能推荐报告</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6; background: #f5f5f5; color: #333;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; padding: 30px; border-radius: 15px; text-align: center;
+            margin-bottom: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        .header p { font-size: 1.2rem; opacity: 0.9; }
+        .query-section {
+            background: white; padding: 25px; border-radius: 10px;
+            margin-bottom: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .recommendations { display: grid; gap: 25px; }
+        .rec-card {
+            background: white; border-radius: 15px; padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+        .rec-card:hover { transform: translateY(-5px); }
+        .rec-header {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            margin-bottom: 20px;
+        }
+        .rec-name { font-size: 1.5rem; font-weight: bold; color: #2c3e50; }
+        .rec-score {
+            background: #667eea; color: white; padding: 8px 15px;
+            border-radius: 20px; font-weight: bold;
+        }
+        .rec-rating {
+            background: #f39c12; color: white; padding: 5px 12px;
+            border-radius: 15px; margin-top: 5px; display: inline-block;
+        }
+        .rec-info { margin: 15px 0; }
+        .info-row { 
+            display: flex; margin-bottom: 12px; align-items: flex-start;
+        }
+        .info-label {
+            font-weight: bold; color: #666; min-width: 80px;
+            margin-right: 15px;
+        }
+        .info-value { flex: 1; }
+        .features {
+            display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0;
+        }
+        .feature {
+            background: #e8f4f8; color: #2c5aa0; padding: 5px 12px;
+            border-radius: 15px; font-size: 0.9rem;
+        }
+        .reason {
+            background: #f8f9fa; padding: 15px; border-radius: 8px;
+            border-left: 4px solid #667eea; margin-top: 15px;
+        }
+        .metadata {
+            background: #2c3e50; color: white; padding: 20px;
+            border-radius: 10px; margin-top: 30px; text-align: center;
+        }
+        .footer {
+            text-align: center; margin-top: 30px; color: #666;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 MeetSpot 智能推荐</h1>
+            <p>基于AI多Agent协作的智能会面地点推荐系统</p>
+        </div>
+
+        <div class="query-section">
+            <h3>📝 您的需求</h3>
+            <p style="font-size: 1.1rem; margin-top: 10px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                我需要为团队会议找一个咖啡馆，参与者位置如下：
+1. 北京朝阳区望京SOHO
+2. 北京海淀区中关村大街
+
+要求：
+- 环境安静，适合商务洽谈
+- 有WiFi和充电位
+- 交通便利，最好有停车位
+- 价格适中
+
+请推荐3个合适的地点，包含详细信息。
+            </p>
+        </div>
+
+        <div class="recommendations">
+            
+                <div class="rec-card">
+                    <div class="rec-header">
+                        <div>
+                            <div class="rec-name">1. 星巴克咖啡 (建外SOHO店)</div>
+                            <div class="rec-rating">⭐ 4.6分</div>
+                        </div>
+                        <div class="rec-score">智能评分: 95</div>
+                    </div>
+                    
+                    <div class="rec-info">
+                        <div class="info-row">
+                            <div class="info-label">📍 地址:</div>
+                            <div class="info-value">北京市朝阳区建外SOHO西区15号楼</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">🚶 距离:</div>
+                            <div class="info-value">680米</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">💰 价格:</div>
+                            <div class="info-value">35-60元/人</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">🕒 营业:</div>
+                            <div class="info-value">07:00-22:00</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">📞 电话:</div>
+                            <div class="info-value">010-58695432</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">🚗 停车:</div>
+                            <div class="info-value">大厦地下停车场，收费标准10元/小时</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">🚇 交通:</div>
+                            <div class="info-value">地铁1号线/10号线国贸站D口步行5分钟</div>
+                        </div>
+                    </div>
+
+                    <div class="features">
+                        <span class="feature">商务环境</span><span class="feature">WiFi</span><span class="feature">充电位</span><span class="feature">安静</span>
+                    </div>
+
+                    <div class="reason">
+                        <strong>🎯 推荐理由:</strong> 距离两地中心位置最近，商务环境优雅，适合商务洽谈
+                    </div>
+                </div>
+            
+                <div class="rec-card">
+                    <div class="rec-header">
+                        <div>
+                            <div class="rec-name">2. COSTA咖啡 (中关村店)</div>
+                            <div class="rec-rating">⭐ 4.4分</div>
+                        </div>
+                        <div class="rec-score">智能评分: 88</div>
+                    </div>
+                    
+                    <div class="rec-info">
+                        <div class="info-row">
+                            <div class="info-label">📍 地址:</div>
+                            <div class="info-value">北京市海淀区中关村大街19号新中关购物中心</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">🚶 距离:</div>
+                            <div class="info-value">850米</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">💰 价格:</div>
+                            <div class="info-value">30-55元/人</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">🕒 营业:</div>
+                            <div class="info-value">08:00-22:00</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">📞 电话:</div>
+                            <div class="info-value">010-82883344</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">🚗 停车:</div>
+                            <div class="info-value">购物中心停车场，前2小时免费</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">🚇 交通:</div>
+                            <div class="info-value">地铁4号线中关村站A口直达</div>
+                        </div>
+                    </div>
+
+                    <div class="features">
+                        <span class="feature">宽敞座位</span><span class="feature">WiFi</span><span class="feature">安静环境</span><span class="feature">窗边位</span>
+                    </div>
+
+                    <div class="reason">
+                        <strong>🎯 推荐理由:</strong> 空间宽敞，座位舒适，适合长时间会谈
+                    </div>
+                </div>
+            
+                <div class="rec-card">
+                    <div class="rec-header">
+                        <div>
+                            <div class="rec-name">3. 蓝山咖啡 (知春路店)</div>
+                            <div class="rec-rating">⭐ 4.3分</div>
+                        </div>
+                        <div class="rec-score">智能评分: 82</div>
+                    </div>
+                    
+                    <div class="rec-info">
+                        <div class="info-row">
+                            <div class="info-label">📍 地址:</div>
+                            <div class="info-value">北京市海淀区知春路128号润城商厦</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">🚶 距离:</div>
+                            <div class="info-value">1200米</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">💰 价格:</div>
+                            <div class="info-value">25-45元/人</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">🕒 营业:</div>
+                            <div class="info-value">09:00-21:00</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">📞 电话:</div>
+                            <div class="info-value">010-82356789</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">🚗 停车:</div>
+                            <div class="info-value">商厦免费停车场</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">🚇 交通:</div>
+                            <div class="info-value">地铁13号线知春路站C口步行3分钟</div>
+                        </div>
+                    </div>
+
+                    <div class="features">
+                        <span class="feature">价格实惠</span><span class="feature">WiFi</span><span class="feature">包厢</span><span class="feature">停车方便</span>
+                    </div>
+
+                    <div class="reason">
+                        <strong>🎯 推荐理由:</strong> 性价比高，有独立包厢可预订，停车便利
+                    </div>
+                </div>
+            
+        </div>
+
+        <div class="metadata">
+            <h3>🤖 技术信息</h3>
+            <p>分析模式: Eko智能模式 | 处理时间: 1ms | 生成时间: 2025/8/14 22:35:38</p>
+            <p>🚀 Powered by MeetSpot × Eko AI Framework</p>
+        </div>
+
+        <div class="footer">
+            <p>💡 提示: 建议您在前往前致电确认营业时间和位置</p>
+            <p>📱 如需导航，建议使用高德地图或百度地图</p>
+        </div>
+    </div>
+</body>
+</html>
+  

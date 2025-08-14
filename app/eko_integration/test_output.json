@@ -1,0 +1,12 @@
+{
+  "success": true,
+  "result": "智能推荐已生成，共找到3个推荐场所",
+  "task_id": "eko_test_1755181830669",
+  "metadata": {
+    "html_file": "eko_test_2025-08-14T14-30-30.html",
+    "html_url": "/workspace/js_src/eko_test_2025-08-14T14-30-30.html",
+    "locations_count": 2,
+    "pois_count": 3,
+    "center_point": "116.396653,39.990742999999995"
+  }
+}

@@ -1,21 +1,56 @@
 <div align="center">
 
-# MeetSpot 🗺️
+# 🚀 EkoMeet
 
-<img src="docs/logo.png" alt="MeetSpot Logo" width="200"/>
+<img src="docs/logo.png" alt="EkoMeet Logo" width="200"/>
 
-**Intelligent Meeting Point Recommendation System - Find the Perfect Place for Every Gathering**
+**AI-Powered Meeting Spot Recommendation System**
+
+基于Eko AI框架的智能会面点推荐系统，通过多Agent协作实现自然语言驱动的地点推荐。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-green.svg)](https://fastapi.tiangolo.com/)
-[![Build Status](https://github.com/JasonRobertDestiny/MeetSpot/actions/workflows/ci.yml/badge.svg)](https://github.com/JasonRobertDestiny/MeetSpot/actions)
+[![Eko Framework](https://img.shields.io/badge/Eko-v3.0--alpha-purple.svg)](https://github.com/FellouAI/eko)
 
-🎯 **[Live Demo](https://meetspot-irq2.onrender.com)** | 📺 **[Demo Video](https://www.bilibili.com/video/BV1aUK7zNEvo/)** | English | [简体中文](README_ZH.md)
+🎯 **AI-Driven Intelligence** | 🤖 **Multi-Agent Architecture** | 🌐 **Natural Language Interface**
 
 </div>
 
-## 📱 Screenshots
+## ✨ 核心特性
+
+- 🤖 **多Agent智能协作** - 基于Eko框架的分布式AI架构
+- 🌍 **智能地理分析** - 高德地图API集成，精准位置计算
+- 💬 **自然语言交互** - 一句话描述需求，AI智能理解
+- 🎯 **个性化推荐** - 基于用户偏好的智能排序算法
+- 📱 **响应式界面** - 适配PC和移动端的现代化UI
+- ⚡ **实时处理** - 异步处理，快速响应
+
+## 🏗️ 技术架构
+
+```
+Frontend (HTML/CSS/JS) 
+    ↓
+FastAPI Backend
+    ↓
+Eko AI Framework
+    ↓
+Multi-Agent System
+    ↓
+- LocationAgent (地理位置处理)
+- POISearchAgent (场所搜索)  
+- RecommendationAgent (智能推荐)
+- VisualizationAgent (结果可视化)
+```
+
+## 🛠️ 技术栈
+
+- **后端**: Python + FastAPI
+- **AI框架**: Eko AI Framework
+- **LLM**: OpenRouter (Claude-3.5-Sonnet)
+- **地图服务**: 高德地图API
+- **前端**: HTML5 + CSS3 + JavaScript
+- **类型系统**: TypeScript (工具开发)
 
 <div align="center">
 

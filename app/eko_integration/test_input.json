@@ -1,0 +1,12 @@
+{
+  "request": "我需要在北京朝阳区和海淀区之间找一个安静的咖啡馆，适合商务洽谈，最好有WiFi和停车位",
+  "context": {
+    "workflow_type": "intelligent_recommendation",
+    "locations": ["北京朝阳区国贸", "北京海淀区中关村"],
+    "requirements": ["安静", "商务", "WiFi", "停车"]
+  },
+  "config": {
+    "amap_api_key": "041db813f69a2424f234fade1e3b3605",
+    "temp_dir": "./temp"
+  }
+}

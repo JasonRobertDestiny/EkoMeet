@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MeetSpot AI - 智能推荐测试</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; padding: 20px;
+        }
+        .container {
+            max-width: 800px; margin: 0 auto;
+            background: white; border-radius: 15px;
+            padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .header {
+            text-align: center; margin-bottom: 30px;
+        }
+        .header h1 { 
+            color: #333; font-size: 2.5rem; margin-bottom: 10px;
+        }
+        .header p { color: #666; font-size: 1.1rem; }
+        .mode-selector {
+            display: flex; gap: 15px; margin-bottom: 25px;
+            justify-content: center;
+        }
+        .mode-btn {
+            padding: 12px 24px; border: 2px solid #667eea;
+            background: white; color: #667eea; border-radius: 25px;
+            cursor: pointer; transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        .mode-btn.active {
+            background: #667eea; color: white;
+        }
+        .input-section {
+            margin-bottom: 25px;
+        }
+        .input-section label {
+            display: block; margin-bottom: 8px;
+            font-weight: bold; color: #333;
+        }
+        .smart-input {
+            width: 100%; min-height: 120px; padding: 15px;
+            border: 2px solid #ddd; border-radius: 10px;
+            font-size: 16px; line-height: 1.5;
+            resize: vertical;
+        }
+        .smart-input:focus {
+            outline: none; border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .traditional-inputs {
+            display: none;
+        }
+        .traditional-inputs.active {
+            display: block;
+        }
+        .location-input {
+            width: 100%; padding: 12px; margin-bottom: 15px;
+            border: 2px solid #ddd; border-radius: 8px;
+            font-size: 16px;
+        }
+        .submit-btn {
+            width: 100%; padding: 15px; background: #667eea;
+            color: white; border: none; border-radius: 10px;
+            font-size: 18px; font-weight: bold; cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .submit-btn:hover {
+            background: #5a6fd8; transform: translateY(-2px);
+        }
+        .submit-btn:disabled {
+            background: #ccc; cursor: not-allowed;
+            transform: none;
+        }
+        .loading {
+            display: none; text-align: center; margin-top: 20px;
+        }
+        .loading.active { display: block; }
+        .spinner {
+            border: 4px solid #f3f3f3; border-top: 4px solid #667eea;
+            border-radius: 50%; width: 40px; height: 40px;
+            animation: spin 1s linear infinite; margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .result {
+            margin-top: 25px; padding: 20px;
+            background: #f8f9fa; border-radius: 10px;
+            display: none;
+        }
+        .result.active { display: block; }
+        .result.success {
+            border-left: 5px solid #28a745;
+        }
+        .result.error {
+            border-left: 5px solid #dc3545;
+        }
+        .view-btn {
+            display: inline-block; margin-top: 15px;
+            padding: 10px 20px; background: #667eea;
+            color: white; text-decoration: none;
+            border-radius: 5px; font-weight: bold;
+        }
+        .badge {
+            background: #667eea; color: white;
+            padding: 5px 12px; border-radius: 15px;
+            font-size: 0.8rem; margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 MeetSpot AI</h1>
+            <p>基于Eko框架的智能会面地点推荐系统 <span class="badge">AI增强版</span></p>
+        </div>
+
+        <div class="mode-selector">
+            <button class="mode-btn active" data-mode="smart">🧠 智能模式</button>
+            <button class="mode-btn" data-mode="traditional">📍 传统模式</button>
+        </div>
+
+        <div class="input-section">
+            <div id="smart-mode" class="smart-mode">
+                <label for="smart-query">请用自然语言描述您的需求：</label>
+                <textarea id="smart-query" class="smart-input" 
+                    placeholder="例如：我需要在北京朝阳区和海淀区之间找一个咖啡馆，要求环境安静，适合商务洽谈，有WiFi和停车位..."></textarea>
+            </div>
+
+            <div id="traditional-mode" class="traditional-inputs">
+                <label>参与者位置：</label>
+                <input type="text" class="location-input" placeholder="位置1：例如 北京朝阳区望京">
+                <input type="text" class="location-input" placeholder="位置2：例如 北京海淀区中关村">
+                <label>场所类型：</label>
+                <select id="venue-type" class="location-input">
+                    <option value="咖啡馆">咖啡馆</option>
+                    <option value="餐厅">餐厅</option>
+                    <option value="图书馆">图书馆</option>
+                    <option value="商场">商场</option>
+                </select>
+                <label>特殊要求：</label>
+                <input type="text" class="location-input" placeholder="例如：安静环境，有WiFi，停车方便">
+            </div>
+        </div>
+
+        <button id="submit-btn" class="submit-btn">🚀 获取智能推荐</button>
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>AI正在分析您的需求，生成个性化推荐...</p>
+        </div>
+
+        <div id="result" class="result">
+            <h3>推荐结果</h3>
+            <div id="result-content"></div>
+        </div>
+    </div>
+
+    <script>
+        // 模式切换
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // 切换按钮状态
+                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // 切换输入界面
+                const mode = btn.dataset.mode;
+                if (mode === 'smart') {
+                    document.getElementById('smart-mode').style.display = 'block';
+                    document.getElementById('traditional-mode').classList.remove('active');
+                    document.getElementById('submit-btn').textContent = '🚀 获取智能推荐';
+                } else {
+                    document.getElementById('smart-mode').style.display = 'none';
+                    document.getElementById('traditional-mode').classList.add('active');
+                    document.getElementById('submit-btn').textContent = '📍 获取传统推荐';
+                }
+            });
+        });
+
+        // 提交处理
+        document.getElementById('submit-btn').addEventListener('click', async () => {
+            const mode = document.querySelector('.mode-btn.active').dataset.mode;
+            const submitBtn = document.getElementById('submit-btn');
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            const resultContent = document.getElementById('result-content');
+
+            // 显示加载状态
+            submitBtn.disabled = true;
+            loading.classList.add('active');
+            result.classList.remove('active');
+
+            try {
+                let requestData, endpoint;
+
+                if (mode === 'smart') {
+                    // 智能模式
+                    const query = document.getElementById('smart-query').value.trim();
+                    if (!query) {
+                        throw new Error('请输入您的需求描述');
+                    }
+                    
+                    requestData = {
+                        query: query,
+                        mode: 'intelligent'
+                    };
+                    endpoint = '/api/smart_recommend';
+                } else {
+                    // 传统模式
+                    const locations = Array.from(document.querySelectorAll('.location-input'))
+                        .slice(0, 2)
+                        .map(input => input.value.trim())
+                        .filter(val => val);
+                    
+                    if (locations.length < 2) {
+                        throw new Error('请至少输入2个位置');
+                    }
+                    
+                    requestData = {
+                        locations: locations,
+                        keywords: document.getElementById('venue-type').value,
+                        user_requirements: document.querySelectorAll('.location-input')[3].value
+                    };
+                    endpoint = '/api/find_meetspot';
+                }
+
+                console.log('发送请求:', endpoint, requestData);
+
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                const data = await response.json();
+                console.log('响应数据:', data);
+
+                if (data.success) {
+                    result.classList.add('success');
+                    result.classList.remove('error');
+                    
+                    let content = `
+                        <p><strong>✅ 推荐生成成功!</strong></p>
+                        <p><strong>处理时间:</strong> ${(data.processing_time || 0).toFixed(2)}秒</p>
+                        <p><strong>模式:</strong> ${data.mode || '智能模式'}</p>
+                    `;
+                    
+                    if (data.html_url) {
+                        content += `<a href="${data.html_url}" target="_blank" class="view-btn">📄 查看详细推荐报告</a>`;
+                    }
+                    
+                    if (data.fallback_used) {
+                        content += `<p style="color: #ffa500; margin-top: 10px;">⚠️ 注意：使用了备用推荐模式</p>`;
+                    }
+                    
+                    resultContent.innerHTML = content;
+                } else {
+                    throw new Error(data.error || data.message || '推荐失败');
+                }
+
+            } catch (error) {
+                console.error('请求失败:', error);
+                result.classList.add('error');
+                result.classList.remove('success');
+                resultContent.innerHTML = `
+                    <p><strong>❌ 推荐失败</strong></p>
+                    <p>${error.message}</p>
+                `;
+            } finally {
+                // 隐藏加载状态
+                submitBtn.disabled = false;
+                loading.classList.remove('active');
+                result.classList.add('active');
+            }
+        });
+
+        // 示例填充
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('smart-query').value = `我需要为团队会议找一个会面地点，参与者位置如下：
+1. 北京朝阳区望京SOHO  
+2. 北京海淀区中关村大街
+
+要求：
+- 环境安静，适合商务洽谈
+- 有WiFi和充电位  
+- 交通便利，最好有停车位
+- 价格适中，环境舒适
+
+请推荐3个合适的地点，包含详细信息。`;
+        });
+    </script>
+</body>
+</html>

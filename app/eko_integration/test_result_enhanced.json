@@ -1,0 +1,22 @@
+{
+  "success": true,
+  "result": "🤖 Eko + OpenRouter 智能推荐完成！\n\n📍 基于多Agent协作分析，为您推荐最佳会面地点：\n\n🏆 综合推荐 Top 3：\n\n1. ⭐ 星巴克咖啡（望京SOHO店）\n   📍 地址: 北京市朝阳区望京街10号望京SOHO T1\n   🚶 距离: 200米\n   ⭐ 评分: 4.6\n   📞 电话: 010-84400688\n\n2. ⭐ Costa咖啡（中关村店）\n   📍 地址: 北京市海淀区中关村大街15号\n   🚶 距离: 350米\n   ⭐ 评分: 4.4\n   📞 电话: 010-62562088\n\n3. ⭐ 太平洋咖啡（知春路店）\n   📍 地址: 北京市海淀区知春路113号银网中心\n   🚶 距离: 800米\n   ⭐ 评分: 4.3\n   📞 电话: 010-82863388\n\n\n🎯 智能分析结果：\n• 地理位置均衡，距离各参与方较近\n• 符合商务洽谈环境要求\n• 均提供WiFi设施，适合办公交流\n• 交通便利，公共交通可达\n\n⚡ 技术栈：\n• AI引擎：Eko Framework\n• LLM模型：Claude-3.5-Sonnet (OpenRouter)\n• 地图服务：高德地图API\n• 分析维度：地理、偏好、环境、便利性\n\n💡 建议：优先选择星巴克或Costa，品牌服务更标准化",
+  "task_id": "eko_openrouter_1755182655313",
+  "metadata": {
+    "html_file": "eko_test_2025-08-14T14-44-15.html",
+    "html_url": "/workspace/js_src/eko_test_2025-08-14T14-44-15.html",
+    "locations_count": 2,
+    "pois_count": 3,
+    "center_point": "116.396653,39.990742999999995",
+    "ai_enhanced": true,
+    "model_used": "anthropic/claude-3.5-sonnet",
+    "api_provider": "OpenRouter",
+    "features_used": [
+      "多Agent协作",
+      "地理智能分析",
+      "偏好学习",
+      "智能排序",
+      "可视化生成"
+    ]
+  }
+}

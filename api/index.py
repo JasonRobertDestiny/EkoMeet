@@ -4,7 +4,7 @@ import time
 import asyncio
 import re
 import json
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 # 添加项目根目录到 Python 路径
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
@@ -26,6 +26,20 @@ except ImportError as e:
     print(f"⚠️ 导入模块警告: {e}")
     config = None
     config_available = False
+
+# 尝试导入Eko集成模块
+eko_available = False
+try:
+    from app.eko_integration.api_integration import (
+        handle_eko_recommendation,
+        EkoRecommendationRequest,
+        EkoRecommendationResponse
+    )
+    eko_available = True
+    print("✅ Eko集成模块导入成功")
+except ImportError as e:
+    print(f"⚠️ Eko集成模块导入失败: {e}")
+    eko_available = False
 
     # 在Vercel环境下创建最小化配置类
     class MinimalConfig:
@@ -162,6 +176,15 @@ class MeetSpotRequest(BaseModel):
     place_type: Optional[str] = ""
     user_requirements: Optional[str] = ""
 
+# Eko请求模型（仅在eko可用时定义）
+if eko_available:
+    class EkoSmartRequest(BaseModel):
+        """Eko智能推荐请求"""
+        query: str  # 自然语言查询
+        locations: Optional[List[str]] = None  # 可选的显式位置
+        mode: str = "intelligent"  # intelligent, simple, complex
+        context: Optional[Dict] = None
+
 # 环境变量配置（用于 Vercel）
 AMAP_API_KEY = os.getenv("AMAP_API_KEY", "")
 AMAP_SECURITY_JS_CODE = os.getenv("AMAP_SECURITY_JS_CODE", "")
@@ -233,7 +256,8 @@ async def health_check():
         "config": {
             "amap_configured": bool(AMAP_API_KEY or (config and hasattr(config, 'amap') and config.amap)),
             "full_features": config_available,
-            "minimal_mode": not config_available and bool(AMAP_API_KEY)
+            "minimal_mode": not config_available and bool(AMAP_API_KEY),
+            "eko_available": eko_available
         }
     }
 
@@ -379,6 +403,102 @@ async def get_recommendations(request: LocationRequest):
 
     # 直接调用主端点并返回相同格式
     return await find_meetspot(meetspot_request)
+
+# Eko智能推荐端点
+if eko_available:
+    @app.post("/api/smart_recommend")
+    async def smart_recommend(request: EkoSmartRequest):
+        """
+        Eko智能推荐API
+        支持自然语言输入和多Agent协作
+        """
+        try:
+            # 转换为Eko请求格式
+            eko_request = EkoRecommendationRequest(
+                natural_language_query=request.query,
+                locations=request.locations,
+                context=request.context,
+                mode=request.mode
+            )
+            
+            # 调用Eko处理函数
+            result = await handle_eko_recommendation(eko_request)
+            
+            # 返回结果
+            return {
+                "success": result.success,
+                "mode": result.mode,
+                "processing_time": result.processing_time,
+                "html_url": result.html_url,
+                "result": result.result,
+                "error": result.error,
+                "metadata": result.metadata,
+                "fallback_used": result.fallback_used,
+                "message": "智能推荐完成" if result.success else "推荐失败"
+            }
+            
+        except Exception as e:
+            print(f"💥 智能推荐异常: {str(e)}")
+            return {
+                "success": False,
+                "mode": request.mode,
+                "processing_time": 0,
+                "html_url": None,
+                "result": None,
+                "error": str(e),
+                "metadata": None,
+                "fallback_used": False,
+                "message": f"智能推荐失败: {str(e)}"
+            }
+
+    @app.post("/api/conversational_recommend")
+    async def conversational_recommend(request: dict):
+        """
+        对话式推荐API
+        支持多轮对话和渐进式需求完善
+        """
+        try:
+            conversation_history = request.get("conversation", [])
+            current_message = request.get("message", "")
+            context = request.get("context", {})
+            
+            # 构建完整的对话查询
+            full_query = f"""
+            对话历史：
+            {chr(10).join([f"用户: {msg.get('user', '')}\n助手: {msg.get('assistant', '')}" for msg in conversation_history[-3:]])}
+            
+            当前用户消息：{current_message}
+            
+            请根据对话历史和当前消息，为用户提供智能的会面地点推荐。
+            如果信息不足，请询问用户需要补充的信息。
+            """
+            
+            eko_request = EkoRecommendationRequest(
+                natural_language_query=full_query,
+                context={**context, "conversation_mode": True},
+                mode="intelligent"
+            )
+            
+            result = await handle_eko_recommendation(eko_request)
+            
+            return {
+                "success": result.success,
+                "response": result.result,
+                "html_url": result.html_url,
+                "needs_more_info": "请提供" in result.result if result.result else False,
+                "processing_time": result.processing_time,
+                "error": result.error
+            }
+            
+        except Exception as e:
+            return {
+                "success": False,
+                "response": f"对话处理失败: {str(e)}",
+                "html_url": None,
+                "needs_more_info": False,
+                "processing_time": 0,
+                "error": str(e)
+            }
 
 @app.get("/api/status")
 async def api_status():

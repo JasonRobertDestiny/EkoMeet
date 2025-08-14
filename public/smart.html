@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MeetSpot Smart - AI驱动的智能会面推荐</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 30px 0;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .ai-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .modes-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .mode-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 3px solid transparent;
+        }
+
+        .mode-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .mode-card.active {
+            border-color: #667eea;
+            transform: translateY(-5px);
+        }
+
+        .mode-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .mode-title {
+            font-size: 1.4rem;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .mode-desc {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .chat-container {
+            background: white;
+            border-radius: 15px;
+            min-height: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: #667eea;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 400px;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        .message.user .message-avatar {
+            background: #667eea;
+        }
+
+        .message.assistant .message-avatar {
+            background: #28a745;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 15px;
+            word-wrap: break-word;
+        }
+
+        .message.user .message-content {
+            background: #667eea;
+            color: white;
+        }
+
+        .message.assistant .message-content {
+            background: #f8f9fa;
+            color: #333;
+            border: 1px solid #e9ecef;
+        }
+
+        .chat-input-container {
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .chat-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .chat-input:focus {
+            border-color: #667eea;
+        }
+
+        .send-btn {
+            position: absolute;
+            right: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .send-btn:hover {
+            background: #5a6fd8;
+        }
+
+        .quick-examples {
+            margin-top: 20px;
+        }
+
+        .example-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .example-chip {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .example-chip:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .result-link {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .result-link:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 MeetSpot Smart</h1>
+            <p class="subtitle">AI驱动的智能会面推荐系统</p>
+            <div class="ai-badge">
+                ⚡ Powered by Eko Multi-Agent Framework
+            </div>
+        </div>
+
+        <div class="modes-container">
+            <div class="mode-card active" data-mode="intelligent">
+                <span class="mode-icon">🧠</span>
+                <div class="mode-title">智能对话模式</div>
+                <div class="mode-desc">用自然语言描述需求，AI自动理解并提供个性化推荐</div>
+            </div>
+            <div class="mode-card" data-mode="simple">
+                <span class="mode-icon">⚡</span>
+                <div class="mode-title">快速推荐模式</div>
+                <div class="mode-desc">基于位置和场所类型快速生成推荐结果</div>
+            </div>
+            <div class="mode-card" data-mode="complex">
+                <span class="mode-icon">🔬</span>
+                <div class="mode-title">深度分析模式</div>
+                <div class="mode-desc">多维度分析，包含成本、风险、替代方案等</div>
+            </div>
+        </div>
+
+        <div class="chat-container">
+            <div class="chat-header">
+                <h3>💬 与AI助手对话</h3>
+                <p>告诉我您的会面需求，我来为您智能推荐最佳地点</p>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <div class="message assistant">
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-content">
+                        您好！我是MeetSpot智能助手。请告诉我您的会面需求，比如参与者位置、场所偏好、特殊要求等，我会为您推荐最合适的会面地点。
+                    </div>
+                </div>
+            </div>
+
+            <div class="loading" id="loading">
+                <p>🔄 AI正在分析您的需求并生成推荐...</p>
+            </div>
+
+            <div class="chat-input-container" style="position: relative;">
+                <input type="text" id="chatInput" class="chat-input" 
+                       placeholder="例如：我需要在朝阳区和海淀区之间找一个适合商务会谈的咖啡馆...">
+                <button class="send-btn" onclick="sendMessage()">📤</button>
+            </div>
+        </div>
+
+        <div class="quick-examples">
+            <h4 style="color: white; margin-bottom: 10px;">💡 快速体验示例：</h4>
+            <div class="example-chips">
+                <div class="example-chip" onclick="useExample(this)">
+                    我需要在朝阳区和海淀区之间找一个咖啡馆
+                </div>
+                <div class="example-chip" onclick="useExample(this)">
+                    团队会议，5个人，需要安静环境和停车位
+                </div>
+                <div class="example-chip" onclick="useExample(this)">
+                    周末聚餐，预算300元，要有包间
+                </div>
+                <div class="example-chip" onclick="useExample(this)">
+                    商务洽谈，环境要高档，有WiFi和充电设施
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentMode = 'intelligent';
+        let conversationHistory = [];
+
+        // 模式切换
+        document.querySelectorAll('.mode-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+                currentMode = card.dataset.mode;
+                
+                // 清空对话历史
+                conversationHistory = [];
+                document.getElementById('chatMessages').innerHTML = `
+                    <div class="message assistant">
+                        <div class="message-avatar">🤖</div>
+                        <div class="message-content">
+                            模式已切换到${card.querySelector('.mode-title').textContent}。${card.querySelector('.mode-desc').textContent}
+                        </div>
+                    </div>
+                `;
+            });
+        });
+
+        // 使用示例
+        function useExample(chip) {
+            document.getElementById('chatInput').value = chip.textContent;
+            sendMessage();
+        }
+
+        // 发送消息
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // 添加用户消息
+            addMessage('user', message);
+            input.value = '';
+            
+            // 显示加载状态
+            document.getElementById('loading').classList.add('show');
+            
+            // 调用API
+            if (currentMode === 'intelligent') {
+                callConversationalAPI(message);
+            } else {
+                callSmartAPI(message);
+            }
+        }
+
+        // 添加消息到对话
+        function addMessage(sender, content, hasLink = false) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const avatar = sender === 'user' ? '👤' : '🤖';
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${avatar}</div>
+                <div class="message-content">
+                    ${content}
+                    ${hasLink ? '<br><a href="' + hasLink + '" target="_blank" class="result-link">📋 查看详细推荐报告</a>' : ''}
+                </div>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // 调用对话式API
+        async function callConversationalAPI(message) {
+            try {
+                const response = await fetch('/api/conversational_recommend', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        conversation: conversationHistory.slice(-3), // 保留最近3轮对话
+                        context: { mode: currentMode }
+                    })
+                });
+
+                const result = await response.json();
+                document.getElementById('loading').classList.remove('show');
+
+                if (result.success) {
+                    // 更新对话历史
+                    conversationHistory.push({
+                        user: message,
+                        assistant: result.response
+                    });
+                    
+                    // 添加助手回复
+                    addMessage('assistant', result.response, result.html_url);
+                } else {
+                    addMessage('assistant', `抱歉，处理您的请求时出现了问题：${result.error || '未知错误'}`);
+                }
+            } catch (error) {
+                document.getElementById('loading').classList.remove('show');
+                addMessage('assistant', `网络错误，请稍后重试：${error.message}`);
+            }
+        }
+
+        // 调用智能推荐API
+        async function callSmartAPI(message) {
+            try {
+                const response = await fetch('/api/smart_recommend', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: message,
+                        mode: currentMode,
+                        context: {}
+                    })
+                });
+
+                const result = await response.json();
+                document.getElementById('loading').classList.remove('show');
+
+                if (result.success) {
+                    const responseText = result.fallback_used 
+                        ? `使用传统模式为您推荐：${result.result}`
+                        : `智能推荐完成！处理时间：${result.processing_time.toFixed(2)}秒`;
+                    
+                    addMessage('assistant', responseText, result.html_url);
+                } else {
+                    addMessage('assistant', `推荐失败：${result.error || '未知错误'}`);
+                }
+            } catch (error) {
+                document.getElementById('loading').classList.remove('show');
+                addMessage('assistant', `网络错误，请稍后重试：${error.message}`);
+            }
+        }
+
+        // 回车发送
+        document.getElementById('chatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
