@@ -54,11 +54,11 @@ class GeocodeEkoTool(EkoTool):
     
     async def execute(self, args: Dict[str, Any], context: Any) -> EkoToolResult:
         try:
-            from app.logger import logger
+            from app.logger import logger as log
             address = args.get("address", "")
             config = context.get("config", {})
             
-            logger.info(f"GeocodeEkoTool开始处理地址: {address}")
+            log.info(f"GeocodeEkoTool开始处理地址: {address}")
             
             # 调用高德地图地理编码API - 多种方式获取API密钥
             api_key = ""
@@ -66,21 +66,21 @@ class GeocodeEkoTool(EkoTool):
             # 方式1: 从config字典中获取
             if isinstance(config, dict) and config.get("amap_api_key"):
                 api_key = config["amap_api_key"]
-                logger.info("使用config字典中的API密钥")
+                log.info("使用config字典中的API密钥")
             # 方式2: 从config对象的amap属性获取
-            elif hasattr(config, 'amap') and config.amap and hasattr(config.amap, 'api_key'):
-                api_key = config.amap.api_key
-                logger.info("使用config对象中的API密钥")
+            elif hasattr(config, 'amap') and getattr(config, 'amap', None) and hasattr(getattr(config, 'amap', None), 'api_key'):
+                api_key = getattr(getattr(config, 'amap', None), 'api_key', '')
+                log.info("使用config对象中的API密钥")
             # 方式3: 从环境变量获取
             else:
                 api_key = os.getenv("AMAP_API_KEY", "")
-                logger.info("使用环境变量中的API密钥")
+                log.info("使用环境变量中的API密钥")
             
             if not api_key:
-                logger.error("高德地图API密钥未配置")
+                log.error("高德地图API密钥未配置")
                 return EkoToolResult(success=False, error="高德地图API密钥未配置")
             
-            logger.info(f"API密钥已获取，长度: {len(api_key)}")
+            log.info(f"API密钥已获取，长度: {len(api_key)}")
             
             url = "https://restapi.amap.com/v3/geocode/geo"
             params = {
@@ -89,14 +89,14 @@ class GeocodeEkoTool(EkoTool):
                 "output": "json"
             }
             
-            logger.info(f"发送地理编码请求: {url}")
-            logger.info(f"请求参数: {params}")
+            log.info(f"发送地理编码请求: {url}")
+            log.info(f"请求参数: {params}")
             
             async with aiohttp.ClientSession() as session:
                 async with session.get(url, params=params) as response:
-                    logger.info(f"API响应状态码: {response.status}")
+                    log.info(f"API响应状态码: {response.status}")
                     data = await response.json()
-                    logger.info(f"API响应数据: {data}")
+                    log.info(f"API响应数据: {data}")
                     
                     if data.get("status") == "1" and data.get("geocodes"):
                         location = data["geocodes"][0]["location"].split(",")
@@ -106,15 +106,20 @@ class GeocodeEkoTool(EkoTool):
                             "latitude": float(location[1]),
                             "formatted_address": data["geocodes"][0].get("formatted_address", address)
                         }
-                        logger.info(f"地理编码成功: {result}")
+                        log.info(f"地理编码成功: {result}")
                         return EkoToolResult(success=True, result=result)
                     else:
                         error_msg = f"地理编码失败: {data.get('info', '未知错误')}"
-                        logger.error(error_msg)
+                        log.error(error_msg)
                         return EkoToolResult(success=False, error=error_msg)
         
         except Exception as e:
-            logger.error(f"地理编码异常: {str(e)}")
+            # 确保在异常处理中也有logger
+            try:
+                from app.logger import logger as log
+                log.error(f"地理编码异常: {str(e)}")
+            except:
+                pass
             return EkoToolResult(success=False, error=f"地理编码异常: {str(e)}")
 
 
@@ -222,8 +227,8 @@ class AmapSearchEkoTool(EkoTool):
         try:
             config = context.get("config", {})
             
-            if hasattr(config, 'amap') and config.amap:
-                api_key = config.amap.api_key
+            if hasattr(config, 'amap') and getattr(config, 'amap', None):
+                api_key = getattr(getattr(config, 'amap', None), 'api_key', '')
             else:
                 api_key = os.getenv("AMAP_API_KEY", "")
             

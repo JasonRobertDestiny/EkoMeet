@@ -94,11 +94,7 @@ try:
     async def handle_eko_recommendation(request: EkoRecommendationRequest) -> EkoRecommendationResponse:
         try:
             # 转换为字典进行调用
-            request_dict = {
-                "query": request.query,
-                "locations": request.locations
-            }
-            result = await _handle_eko(request_dict)
+            result = await _handle_eko(request)
             
             # 处理返回结果
             if isinstance(result, dict):
@@ -144,6 +140,14 @@ try:
         get_stats_endpoint as _get_stats
     )
     
+    conversational_available = True
+    print("✅ 对话式推荐模块导入成功")
+except ImportError as e:
+    print(f"⚠️ 对话式推荐模块导入失败: {e}")
+    conversational_available = False
+
+# 根据导入结果创建包装函数
+if conversational_available:
     # 创建包装函数来避免类型冲突
     def initialize_conversational_api(config):
         return _init_conv(config)
@@ -162,13 +166,8 @@ try:
         
     async def get_stats_endpoint():
         return await _get_stats()
-    
-    conversational_available = True
-    print("✅ 对话式推荐模块导入成功")
-except ImportError as e:
-    print(f"⚠️ 对话式推荐模块导入失败: {e}")
-    conversational_available = False
-    
+else:
+    # 如果导入失败，创建默认的占位函数
     def initialize_conversational_api(config):
         pass
         
