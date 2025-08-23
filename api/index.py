@@ -29,11 +29,11 @@ class Result:
         return str(self.output)
 
 # 数据模型定义
-class EkoRecommendationRequest(BaseModel):
+class ApiEkoRecommendationRequest(BaseModel):
     query: str
     locations: Optional[List[str]] = None
     
-class EkoRecommendationResponse(BaseModel):
+class ApiEkoRecommendationResponse(BaseModel):
     success: bool
     result: Optional[Dict] = None
     error: Optional[str] = None
@@ -90,28 +90,36 @@ except ImportError as e:
 eko_available = False
 try:
     from app.eko_integration.api_integration import handle_eko_recommendation as _handle_eko
+    from app.eko_integration.api_integration import EkoRecommendationRequest as EkoApiRequest
     
-    async def handle_eko_recommendation(request: EkoRecommendationRequest) -> EkoRecommendationResponse:
+    async def handle_eko_recommendation(request: ApiEkoRecommendationRequest) -> ApiEkoRecommendationResponse:
         try:
-            # 转换为字典进行调用
-            result = await _handle_eko(request)
+            # 转换为Eko API所需的格式
+            eko_request = EkoApiRequest(
+                natural_language_query=request.query,
+                locations=request.locations,
+                context=None,
+                mode="intelligent"
+            )
+            
+            result = await _handle_eko(eko_request)
             
             # 处理返回结果
             if isinstance(result, dict):
-                return EkoRecommendationResponse(
+                return ApiEkoRecommendationResponse(
                     success=result.get('success', False),
                     result=result.get('result'),
                     error=result.get('error')
                 )
             else:
                 # 如果返回的是对象，尝试访问属性
-                return EkoRecommendationResponse(
+                return ApiEkoRecommendationResponse(
                     success=getattr(result, 'success', False),
                     result=getattr(result, 'result', None),
                     error=getattr(result, 'error', None)
                 )
         except Exception as e:
-            return EkoRecommendationResponse(
+            return ApiEkoRecommendationResponse(
                 success=False,
                 error=f"Eko处理错误: {str(e)}"
             )
@@ -122,14 +130,21 @@ except ImportError as e:
     print(f"⚠️ Eko集成模块导入失败: {e}")
     eko_available = False
     
-    async def handle_eko_recommendation(request: EkoRecommendationRequest) -> EkoRecommendationResponse:
-        return EkoRecommendationResponse(
+    async def handle_eko_recommendation(request: ApiEkoRecommendationRequest) -> ApiEkoRecommendationResponse:
+        return ApiEkoRecommendationResponse(
             success=False,
             error="Eko integration not available"
         )
 
 # 尝试导入对话式推荐模块
 conversational_available = False
+_init_conv = None
+_start_conv = None
+_handle_resp = None
+_get_status = None
+_cancel_conv = None
+_get_stats = None
+
 try:
     from app.eko_integration.conversational_api import (
         initialize_conversational_api as _init_conv,
@@ -145,27 +160,36 @@ try:
 except ImportError as e:
     print(f"⚠️ 对话式推荐模块导入失败: {e}")
     conversational_available = False
+    # 确保所有变量都是None
+    _init_conv = None
+    _start_conv = None
+    _handle_resp = None
+    _get_status = None
+    _cancel_conv = None
+    _get_stats = None
 
 # 根据导入结果创建包装函数
-if conversational_available:
+if (conversational_available and _init_conv is not None and 
+    _start_conv is not None and _handle_resp is not None and
+    _get_status is not None and _cancel_conv is not None and _get_stats is not None):
     # 创建包装函数来避免类型冲突
     def initialize_conversational_api(config):
-        return _init_conv(config)
+        return _init_conv(config)  # type: ignore
         
     async def start_conversation_endpoint(request):
-        return await _start_conv(request)
+        return await _start_conv(request)  # type: ignore
         
     async def handle_response_endpoint(request):
-        return await _handle_resp(request)
+        return await _handle_resp(request)  # type: ignore
         
     async def get_status_endpoint(session_id):
-        return await _get_status(session_id)
+        return await _get_status(session_id)  # type: ignore
         
     async def cancel_conversation_endpoint(session_id):
-        return await _cancel_conv(session_id)
+        return await _cancel_conv(session_id)  # type: ignore
         
     async def get_stats_endpoint():
-        return await _get_stats()
+        return await _get_stats()  # type: ignore
 else:
     # 如果导入失败，创建默认的占位函数
     def initialize_conversational_api(config):
@@ -551,7 +575,7 @@ async def eko_smart_recommend(request: EkoSmartRequest):
                 "fallback_suggestion": "请使用标准推荐功能 /api/find_ekomeet"
             }
         
-        eko_request = EkoRecommendationRequest(
+        eko_request = ApiEkoRecommendationRequest(
             query=request.query,
             locations=request.locations
         )
