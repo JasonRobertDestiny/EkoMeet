@@ -1,0 +1,32 @@
+{
+  "name": "ekomeet-eko-integration",
+  "version": "1.0.0",
+  "description": "EkoMeet与Eko框架集成的Node.js运行时",
+  "main": "eko_meetspot_core.js",
+  "type": "module",
+  "scripts": {
+    "install-eko": "npm install @eko-ai/eko @eko-ai/eko-nodejs",
+    "test": "node test_integration.js"
+  },
+  "dependencies": {
+    "@eko-ai/eko": "^3.0.0-alpha.7",
+    "@eko-ai/eko-nodejs": "^3.0.0-alpha.7",
+    "dotenv": "^17.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  },
+  "keywords": [
+    "ekomeet",
+    "eko",
+    "ai-agent",
+    "recommendation"
+  ],
+  "author": "EkoMeet Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JasonRobertDestiny/EkoMeet.git",
+    "directory": "app/eko_integration"
+  }
+}

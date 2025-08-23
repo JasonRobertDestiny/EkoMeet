@@ -1,0 +1,33 @@
+{
+  "name": "ekomeet",
+  "version": "1.0.0",
+  "description": "EkoMeet基于Eko AI的智能会面点推荐系统",
+  "main": "web_server.py",
+  "type": "module",
+  "scripts": {
+    "dev": "python web_server.py",
+    "start": "python web_server.py",
+    "install-deps": "npm install"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7"
+  },
+  "engines": {
+    "python": "3.11",
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JasonRobertDestiny/EkoMeet.git"
+  },
+  "keywords": [
+    "ekomeet",
+    "ai-recommendation",
+    "location-search",
+    "meetup-planner"
+  ],
+  "author": "EkoMeet Team",
+  "license": "MIT"
+}

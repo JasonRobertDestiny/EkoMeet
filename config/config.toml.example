@@ -1,0 +1,22 @@
+# MeetSpot配置文件示例
+# 使用方法: 复制此文件为config.toml并填入您的API密钥
+
+# 高德地图API配置
+[amap]
+api_key = "YOUR_AMAP_API_KEY"  # 替换为您的高德Web服务API Key
+security_js_code = "YOUR_AMAP_SECURITY_JS_CODE"  # 替换为您的高德地图JS API安全密钥
+
+# 如果使用OpenAI或其他LLM服务，也在此配置
+# [openai]
+# api_key = "sk-YOUR_OPENAI_API_KEY"
+# base_url = "YOUR_OPENAI_API_BASE_URL_IF_NEEDED"
+
+# 日志配置
+[log]
+level = "info"  # 可选: debug, info, warning, error, critical
+file = "logs/meetspot.log"
+
+# 服务器配置
+[server]
+host = "0.0.0.0"
+port = 8000

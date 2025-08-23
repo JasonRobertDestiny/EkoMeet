@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eko助手测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f0f0f0;
+        }
+        .test-info {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .console-output {
+            background: #000;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="test-info">
+        <h1>🧪 Eko助手调试测试页面</h1>
+        <p>这个页面专门用于调试 Eko 助手的加载和初始化问题。</p>
+        
+        <h3>检查项目：</h3>
+        <ul>
+            <li id="boxicons-check">❓ Boxicons 图标库加载状态</li>
+            <li id="script-check">❓ Eko助手脚本加载状态</li>
+            <li id="assistant-check">❓ Eko助手初始化状态</li>
+            <li id="api-check">❓ API配置获取状态</li>
+        </ul>
+
+        <div class="console-output" id="console-output">
+            <div>🚀 开始调试...</div>
+        </div>
+    </div>
+
+    <script>
+        // 控制台输出函数
+        function logToConsole(message, type = 'info') {
+            const console = document.getElementById('console-output');
+            const timestamp = new Date().toLocaleTimeString();
+            const colors = {
+                info: '#00ff00',
+                error: '#ff0000',
+                warn: '#ffff00',
+                success: '#00ffff'
+            };
+            console.innerHTML += `<div style="color: ${colors[type]}">[${timestamp}] ${message}</div>`;
+            console.scrollTop = console.scrollHeight;
+        }
+
+        // 检查 Boxicons
+        function checkBoxicons() {
+            const testIcon = document.createElement('i');
+            testIcon.className = 'bx bx-bot';
+            testIcon.style.fontSize = '0px';
+            document.body.appendChild(testIcon);
+            
+            setTimeout(() => {
+                const computed = window.getComputedStyle(testIcon);
+                if (computed.fontFamily && computed.fontFamily.includes('boxicons')) {
+                    document.getElementById('boxicons-check').innerHTML = '✅ Boxicons 图标库加载成功';
+                    logToConsole('✅ Boxicons 加载成功', 'success');
+                } else {
+                    document.getElementById('boxicons-check').innerHTML = '❌ Boxicons 图标库加载失败';
+                    logToConsole('❌ Boxicons 加载失败', 'error');
+                }
+                document.body.removeChild(testIcon);
+            }, 1000);
+        }
+
+        // 检查API配置
+        async function checkApiConfig() {
+            try {
+                logToConsole('🔍 检查API配置...', 'info');
+                const response = await fetch('/api/config/siliconflow-key');
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('api-check').innerHTML = '✅ API配置获取成功';
+                    logToConsole(`✅ API配置: 模型=${data.model}, 已配置=${data.configured}`, 'success');
+                } else {
+                    document.getElementById('api-check').innerHTML = '❌ API配置获取失败';
+                    logToConsole(`❌ API配置获取失败: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                document.getElementById('api-check').innerHTML = '❌ API配置请求异常';
+                logToConsole(`❌ API配置异常: ${error.message}`, 'error');
+            }
+        }
+
+        // 页面加载完成后开始检查
+        document.addEventListener('DOMContentLoaded', function() {
+            logToConsole('📄 页面DOM加载完成', 'info');
+            checkBoxicons();
+            checkApiConfig();
+        });
+
+        // 监听脚本加载
+        window.addEventListener('load', function() {
+            logToConsole('🌐 页面完全加载完成', 'info');
+            
+            // 检查Eko助手是否存在
+            setTimeout(() => {
+                if (window.ekoAssistant) {
+                    document.getElementById('assistant-check').innerHTML = '✅ Eko助手初始化成功';
+                    logToConsole('✅ Eko助手对象创建成功', 'success');
+                    
+                    // 检查助手按钮是否在页面上
+                    const assistantButton = document.getElementById('eko-assistant-button');
+                    if (assistantButton) {
+                        logToConsole('✅ Eko助手按钮已添加到页面', 'success');
+                        // 获取按钮位置信息
+                        const rect = assistantButton.getBoundingClientRect();
+                        logToConsole(`📍 助手按钮位置: right=${rect.right}px, bottom=${rect.bottom}px`, 'info');
+                    } else {
+                        logToConsole('❌ Eko助手按钮未找到', 'error');
+                    }
+                } else {
+                    document.getElementById('assistant-check').innerHTML = '❌ Eko助手初始化失败';
+                    logToConsole('❌ window.ekoAssistant 对象不存在', 'error');
+                }
+
+                // 检查脚本是否加载
+                const scripts = Array.from(document.scripts);
+                const ekoScript = scripts.find(script => script.src.includes('eko-assistant.js'));
+                if (ekoScript) {
+                    document.getElementById('script-check').innerHTML = '✅ Eko助手脚本加载成功';
+                    logToConsole('✅ eko-assistant.js 脚本已加载', 'success');
+                } else {
+                    document.getElementById('script-check').innerHTML = '❌ Eko助手脚本加载失败';
+                    logToConsole('❌ eko-assistant.js 脚本未找到', 'error');
+                }
+            }, 2000);
+        });
+
+        // 捕获JavaScript错误
+        window.addEventListener('error', function(event) {
+            logToConsole(`❌ JavaScript错误: ${event.error.message} (${event.filename}:${event.lineno})`, 'error');
+        });
+    </script>
+
+    <!-- 加载Eko助手 -->
+    <script src="/public/eko-assistant.js?v=debug"></script>
+</body>
+</html>

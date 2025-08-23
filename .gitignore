@@ -1,0 +1,143 @@
+# 版本控制和临时文件
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 项目特定文件
+logs/
+workspace/js_src/
+*.log
+
+# 测试文件 - 这些不需要部署
+test_*.py
+*_test.py
+comprehensive_test.py
+quick_test.py
+simple_test.py
+performance_verification.py
+verify_*.py
+*test*.py
+
+# 开发和构建文件
+demo_*.py
+show_development_plan.py
+stage1_development_planner.py
+fix_recommender.py
+run_flow.py
+
+# 文档和报告（保留README等重要文档）
+*_REPORT.md
+# *_GUIDE.md  # 暂时注释，允许 RENDER_DEPLOY_GUIDE.md
+AUTOMATION_GUIDE.md
+BADGE_FIX_REPORT.md
+CHANGELOG.md
+CONTRIBUTING.md
+CONTRIBUTOR_RECRUITMENT_ISSUE.md
+DEVELOPER_RECRUITMENT_SUMMARY.md
+FINAL_STATUS.md
+GITHUB_*.md
+GITHUB_*.txt
+OPTIMIZATION_REPORT.md
+PERFORMANCE_OPTIMIZATION_REPORT.md
+PROJECT_COMPLETION_REPORT.md
+PUSH_GUIDE.md
+RECRUITMENT_ACTION_PLAN.md
+STAGE1_COMPLETION_REPORT.md
+YAML_FIX_REPORT.md
+
+# Docker和其他部署配置
+Dockerfile
+docker-compose.yml
+deploy.sh
+deploy.bat
+verify_project.sh
+
+# Cloudflare相关
+wrangler.toml
+src/
+functions/
+_build.json
+build.sh
+
+# 营销材料
+marketing/
+
+# 临时的egg-info
+openmanus.egg-info/
+
+# 测试目录
+tests/
